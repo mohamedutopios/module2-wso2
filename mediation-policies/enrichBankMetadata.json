@@ -1,0 +1,29 @@
+{
+    "category": "Mediation",
+    "name": "enrichBankMetadata",
+    "displayName": "Enrich with Bank Metadata",
+    "description": "Ajoute un objet _meta à la réponse avec source, environnement et classification de données. Pour listes, encapsule dans {data, count, _meta}.",
+    "applicableFlows": ["response"],
+    "supportedGateways": ["Synapse"],
+    "supportedApiTypes": ["HTTP"],
+    "policyAttributes": [
+        {
+            "name": "ENVIRONMENT",
+            "displayName": "Environment",
+            "description": "Nom de l'environnement (dev, staging, prod)",
+            "required": true,
+            "type": "String",
+            "defaultValue": "prod",
+            "validationRegex": "^(dev|staging|prod)$"
+        },
+        {
+            "name": "CLASSIFICATION",
+            "displayName": "Data Classification",
+            "description": "Classification RGPD de la donnée",
+            "required": true,
+            "type": "String",
+            "allowedValues": ["public", "internal", "confidential", "restricted"],
+            "defaultValue": "internal"
+        }
+    ]
+}

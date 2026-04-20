@@ -1,0 +1,10 @@
+{
+    "category": "Mediation",
+    "name": "addCorrelationId",
+    "displayName": "Add Correlation ID",
+    "description": "Génère un UUID et l'ajoute en header X-Correlation-ID à toute requête traversant le Gateway. Utile pour le tracing distribué.",
+    "applicableFlows": ["request"],
+    "supportedGateways": ["Synapse"],
+    "supportedApiTypes": ["HTTP"],
+    "policyAttributes": []
+}

@@ -1,0 +1,35 @@
+type Query {
+    "Récupère le portefeuille d'actions d'un client"
+    portfolio(customerId: String!): Portfolio
+
+    "Récupère le cours de marché d'un instrument"
+    marketPrice(symbol: String!): MarketPrice
+
+    "Liste tous les portefeuilles (admin seulement)"
+    allHoldings: [Portfolio!]!
+}
+
+"Portefeuille d'instruments financiers d'un client"
+type Portfolio {
+    customerId: String!
+    totalValue: Float!
+    positions: [Position!]!
+}
+
+"Position sur un instrument financier"
+type Position {
+    symbol: String!
+    quantity: Int!
+    avgPrice: Float!
+    sector: String
+    currentPrice: Float
+    marketValue: Float
+}
+
+"Cours de marché d'un instrument"
+type MarketPrice {
+    symbol: String!
+    price: Float!
+    currency: String!
+    asOf: String!
+}

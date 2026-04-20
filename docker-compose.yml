@@ -1,0 +1,115 @@
+version: "3.8"
+
+
+services:
+
+  wso2am:
+    image: wso2/wso2am:4.3.0
+    platform: linux/amd64
+    container_name: wso2am
+    hostname: wso2am
+    ports:
+      - "9443:9443"
+      - "9763:9763"
+      - "8243:8243"
+      - "8280:8280"
+      - "9099:9099"
+      - "9021:9021"
+    environment:
+      JVM_MEM_OPTS: "-Xms1g -Xmx2g"
+    healthcheck:
+      test: ["CMD", "curl", "-k", "-f", "https://localhost:9443/services/Version"]
+      interval: 30s
+      timeout: 10s
+      retries: 20
+      start_period: 180s
+    restart: unless-stopped
+    networks:
+      - utopios-net
+
+  accounts-api:
+    build: ./accounts-api
+    image: utopiosbank/accounts-api:1.0.0
+    container_name: accounts-api
+    hostname: accounts-api
+    ports:
+      - "8081:8080"
+    networks:
+      - utopios-net
+
+  transactions-api:
+    build: ./transactions-api
+    image: utopiosbank/transactions-api:1.0.0
+    container_name: transactions-api
+    hostname: transactions-api
+    ports:
+      - "8082:8080"
+    networks:
+      - utopios-net
+
+  customers-api:
+    build: ./customers-api
+    image: utopiosbank/customers-api:1.0.0
+    container_name: customers-api
+    hostname: customers-api
+    ports:
+      - "8083:8080"
+    networks:
+      - utopios-net
+
+  credit-scoring-api:
+    build: ./credit-scoring-api
+    image: utopiosbank/credit-scoring-api:1.0.0
+    container_name: credit-scoring-api
+    hostname: credit-scoring-api
+    ports:
+      - "8084:8080"
+    networks:
+      - utopios-net
+
+  notifications-api:
+    build: ./notifications-api
+    image: utopiosbank/notifications-api:1.0.0
+    container_name: notifications-api
+    hostname: notifications-api
+    ports:
+      - "8085:8080"
+    networks:
+      - utopios-net
+
+  portfolio-graphql-api:
+    build: ./portfolio-graphql-api
+    image: utopiosbank/portfolio-graphql-api:1.0.0
+    container_name: portfolio-graphql-api
+    hostname: portfolio-graphql-api
+    ports:
+      - "8086:8080"
+    networks:
+      - utopios-net
+
+  async-events-api:
+    build: ./async-events-api
+    image: utopiosbank/async-events-api:1.0.0
+    container_name: async-events-api
+    hostname: async-events-api
+    ports:
+      - "8087:8080"
+    networks:
+      - utopios-net
+
+  # Instance secondaire pour démo Load Balancing (démo 8)
+  # Commentée par défaut, à activer avec : docker compose up accounts-api-2 -d
+  # accounts-api-2:
+  #   build: ./accounts-api
+  #   image: utopiosbank/accounts-api:1.0.0
+  #   container_name: accounts-api-2
+  #   hostname: accounts-api-2
+  #   ports:
+  #     - "8091:8080"
+  #   networks:
+  #     - utopios-net
+
+networks:
+  utopios-net:
+    driver: bridge
+    name: utopios-net

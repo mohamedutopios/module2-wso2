@@ -1,0 +1,121 @@
+asyncapi: 2.6.0
+info:
+  title: UtopiosBank Events API
+  version: 1.0.0
+  description: |
+    Flux d'événements temps réel UtopiosBank via WebSocket.
+
+    Les clients et partenaires s'abonnent pour recevoir les notifications
+    de transactions, d'alertes fraude, et d'évolutions de compte en temps réel.
+
+    **Cas d'usage** :
+    - Apps mobiles (push notif transaction)
+    - Systèmes anti-fraude partenaires
+    - Dashboards opérations
+
+defaultContentType: application/json
+
+servers:
+  production:
+    url: ws://events-api:8080/ws
+    protocol: ws
+    description: WebSocket interne (DNS Docker)
+
+channels:
+  /transactions:
+    description: Flux des transactions en cours
+    subscribe:
+      summary: Reçoit les événements transaction en temps réel
+      operationId: onTransactionEvent
+      message:
+        $ref: '#/components/messages/TransactionEvent'
+
+  /fraud-alerts:
+    description: Alertes fraude détectées par les moteurs ML
+    subscribe:
+      summary: Reçoit les alertes de fraude
+      operationId: onFraudAlert
+      message:
+        $ref: '#/components/messages/FraudAlert'
+
+  /accounts/{customerId}/updates:
+    description: Mises à jour de compte pour un client donné
+    parameters:
+      customerId:
+        description: Identifiant client
+        schema:
+          type: string
+    subscribe:
+      summary: Reçoit les changements sur les comptes du client
+      operationId: onAccountUpdate
+      message:
+        $ref: '#/components/messages/AccountUpdate'
+
+components:
+  messages:
+    TransactionEvent:
+      name: TransactionEvent
+      title: Événement de transaction
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          eventId:
+            type: string
+            example: "EVT-abc123"
+          eventType:
+            type: string
+            enum: [TRANSACTION_CREATED, TRANSACTION_VALIDATED, TRANSACTION_REJECTED]
+          transactionId:
+            type: string
+          fromIban:
+            type: string
+          toIban:
+            type: string
+          amount:
+            type: number
+          timestamp:
+            type: string
+            format: date-time
+
+    FraudAlert:
+      name: FraudAlert
+      title: Alerte de fraude
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          alertId:
+            type: string
+          severity:
+            type: string
+            enum: [LOW, MEDIUM, HIGH, CRITICAL]
+          customerId:
+            type: string
+          reason:
+            type: string
+          transactionId:
+            type: string
+          detectedAt:
+            type: string
+            format: date-time
+
+    AccountUpdate:
+      name: AccountUpdate
+      title: Mise à jour de compte
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          iban:
+            type: string
+          updateType:
+            type: string
+            enum: [BALANCE_CHANGED, STATUS_CHANGED, OVERDRAFT_USED]
+          oldValue:
+            type: string
+          newValue:
+            type: string
+          timestamp:
+            type: string
+            format: date-time

@@ -1,0 +1,10 @@
+{
+    "category": "Mediation",
+    "name": "maskIban",
+    "displayName": "Mask IBAN in Response",
+    "description": "Masque les IBAN du payload JSON de réponse : FR7630006000011234567890189 devient FR76XXXXXXXXXXXXXXXXX0189. Utile pour protéger les données bancaires.",
+    "applicableFlows": ["response"],
+    "supportedGateways": ["Synapse"],
+    "supportedApiTypes": ["HTTP"],
+    "policyAttributes": []
+}

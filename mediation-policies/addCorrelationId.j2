@@ -1,0 +1,8 @@
+<!-- addCorrelationId.j2 — Ajoute un X-Correlation-ID à chaque requête -->
+<sequence name="addCorrelationId">
+    <property name="uuid" expression="java.util.UUID.randomUUID()" />
+    <property name="X-Correlation-ID" expression="get-property('uuid')" scope="transport" />
+    <log level="custom">
+        <property name="CORRELATION_ID" expression="get-property('uuid')" />
+    </log>
+</sequence>

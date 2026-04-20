@@ -1,0 +1,31 @@
+<!-- enrichBankMetadata.j2 — Enrichit la réponse avec _meta UtopiosBank -->
+<sequence name="enrichBankMetadata">
+    <property name="messageType" value="application/json" scope="axis2"/>
+    <script language="js">
+        <![CDATA[
+        var payload = mc.getPayloadJSON();
+        var enriched;
+        if (Array.isArray(payload)) {
+            enriched = {
+                _meta: {
+                    source: "UtopiosBank API Platform",
+                    environment: "{{ENVIRONMENT}}",
+                    timestamp: new Date().toISOString(),
+                    dataClassification: "{{CLASSIFICATION}}"
+                },
+                data: payload,
+                count: payload.length
+            };
+        } else {
+            enriched = payload;
+            enriched._meta = {
+                source: "UtopiosBank API Platform",
+                environment: "{{ENVIRONMENT}}",
+                timestamp: new Date().toISOString(),
+                dataClassification: "{{CLASSIFICATION}}"
+            };
+        }
+        mc.setPayloadJSON(enriched);
+        ]]>
+    </script>
+</sequence>

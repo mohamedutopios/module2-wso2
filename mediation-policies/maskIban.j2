@@ -1,0 +1,34 @@
+<!-- maskIban.j2 — Masque les IBAN dans le payload JSON de réponse -->
+<sequence name="maskIban">
+    <!--
+      Cette policy s'applique en FLOW RESPONSE.
+      Elle remplace les chiffres du milieu de tous les IBAN par des X pour
+      éviter d'exposer les IBAN complets aux consommateurs non habilités.
+      Exemple : FR7630006000011234567890189 → FR76XXXX XXXX XXXX XXXX 0189
+    -->
+    <property name="messageType" value="application/json" scope="axis2"/>
+    <script language="js">
+        <![CDATA[
+        var payload = mc.getPayloadJSON();
+        function maskIbans(obj) {
+            if (obj === null || obj === undefined) return obj;
+            if (typeof obj === 'string') {
+                if (obj.match(/^FR\d{25}$/)) {
+                    return obj.substring(0, 4) + 'XXXXXXXXXXXXXXXXX' + obj.substring(21);
+                }
+                return obj;
+            }
+            if (Array.isArray(obj)) return obj.map(maskIbans);
+            if (typeof obj === 'object') {
+                var result = {};
+                for (var k in obj) {
+                    result[k] = maskIbans(obj[k]);
+                }
+                return result;
+            }
+            return obj;
+        }
+        mc.setPayloadJSON(maskIbans(payload));
+        ]]>
+    </script>
+</sequence>
