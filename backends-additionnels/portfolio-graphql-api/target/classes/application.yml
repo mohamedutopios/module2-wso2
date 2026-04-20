@@ -1,0 +1,10 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: portfolio-graphql-api
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
