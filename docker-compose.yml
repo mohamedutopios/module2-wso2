@@ -1,11 +1,16 @@
-version: "3.8"
-
+# UtopiosBank — Stack complète pour démos formation
+# 6 microservices REST + 1 GraphQL + 1 Streaming WebSocket + WSO2 APIM
+#
+# À utiliser avec les dossiers :
+#   accounts-api/, transactions-api/, customers-api/,
+#   credit-scoring-api/, notifications-api/,
+#   portfolio-graphql-api/, async-events-api/,
+#   cards-api/
 
 services:
 
   wso2am:
     image: wso2/wso2am:4.3.0
-    platform: linux/amd64
     container_name: wso2am
     hostname: wso2am
     ports:
@@ -16,6 +21,8 @@ services:
       - "9099:9099"
       - "9021:9021"
     environment:
+      # Note : JVM_MEM_OPTS n'est pas lu par l'image wso2am 4.3.0 en l'état.
+      # Pour ajuster réellement la heap, monter un wso2server.sh custom.
       JVM_MEM_OPTS: "-Xms1g -Xmx2g"
     healthcheck:
       test: ["CMD", "curl", "-k", "-f", "https://localhost:9443/services/Version"]
@@ -97,8 +104,25 @@ services:
     networks:
       - utopios-net
 
+  cards-api:
+    build: ./cards-api
+    image: utopiosbank/cards-api:1.0.0
+    container_name: cards-api
+    hostname: cards-api
+    ports:
+      - "8088:8080"
+    networks:
+      - utopios-net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      start_period: 60s
+      retries: 3
+
   # Instance secondaire pour démo Load Balancing (démo 8)
-  # Commentée par défaut, à activer avec : docker compose up accounts-api-2 -d
+  # Commentée par défaut, à activer en décommentant puis :
+  #   docker compose up accounts-api-2 -d
   # accounts-api-2:
   #   build: ./accounts-api
   #   image: utopiosbank/accounts-api:1.0.0
